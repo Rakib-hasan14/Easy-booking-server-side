@@ -45,6 +45,13 @@ async function run() {
           res.json(result)
           console.log(result)
         });
+        app.post('/hotels', async (req, res) => {
+          const bookings = req.body;
+          console.log(bookings)
+          const result = await dataConnection.insertOne(bookings);
+          res.json(result)
+          console.log(result)
+        });
 
         // GET Bookings 
         app.get('/bookings' , async(req , res)=> {
@@ -52,6 +59,15 @@ async function run() {
           const result = await cursor.toArray()
           res.send(result)
       })
+
+      // DELETE Hotel data
+      app.delete('/hotels/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) };
+        const result = await usersCollection.deleteOne(query);
+        res.json(result);
+    })
+
 
     } finally {
     //   await client.close();
