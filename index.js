@@ -36,21 +36,23 @@ async function run() {
           const result = await dataConnection.findOne(query)
           res.json(result);
         })
+        app.get('/bookings/:id', async(req , res)=> {
+          const id = req.params.id;
+          const query = {_id : ObjectId(id)}
+          const result = await secondDataConnection.findOne(query)
+          res.json(result);
+        })
 
         //POST Bookings
         app.post('/bookings', async (req, res) => {
           const bookings = req.body;
-          console.log(bookings)
           const result = await secondDataConnection.insertOne(bookings);
           res.json(result)
-          console.log(result)
         });
         app.post('/hotels', async (req, res) => {
           const bookings = req.body;
-          console.log(bookings)
           const result = await dataConnection.insertOne(bookings);
           res.json(result)
-          console.log(result)
         });
 
         // GET Bookings 
@@ -60,11 +62,27 @@ async function run() {
           res.send(result)
       })
 
+      //Update data
+      app.put('/bookings/:id', async (req, res) => {
+        const id = req.params.id;
+        const changeData = req.body;
+        const find = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        console.log(changeData.status)
+        const updateDoc = {
+            $set: {
+                status: changeData.status,
+            },
+        };
+        const result = await secondDataConnection.updateOne(find, updateDoc, options)
+        res.json(result)
+    })
+
       // DELETE Hotel data
-      app.delete('/hotels/:id', async (req, res) => {
+      app.delete('/bookings/:id', async (req, res) => {
         const id = req.params.id;
         const query = { _id: ObjectId(id) };
-        const result = await usersCollection.deleteOne(query);
+        const result = await secondDataConnection.deleteOne(query);
         res.json(result);
     })
 
